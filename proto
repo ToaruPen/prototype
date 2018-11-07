@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html>
+  <head></head>
+  <body>
+    <img style="max-width: 400px;"><input type="file" accept="image/*" />
+    <pre></pre>
+    <script type="text/javascript">
+      const api_key = `AIzaSyDP8DRHM9GWXn9MvFy4bGUzaVzFeBtiyUw`;
+      const url = `https://vision.googleapis.com/v1/images:annotate`;
+      // Send API Request to Cloud Vision API
+      const sendAPI = (base64string) => {
+        let body = {
+          requests: [
+            {image: {content: base64string}, features: [{type: 'TEXT_DETECTION'}]}
+          ]
+        };
+        let xhr = new XMLHttpRequest();
+        xhr.open('POST', `${url}?key=${api_key}`, true);
+        xhr.setRequestHeader('Content-Type', 'application/json');
+        const p = new Promise((resolve, reject) => {
+          xhr.onreadystatechange = () => {
+            if (xhr.readyState != XMLHttpRequest.DONE) return;
+            if (xhr.status >= 400) return reject({message: `Failed with ${xhr.status}:${xhr.statusText}`});
+            resolve(JSON.parse(xhr.responseText));
+          };
+        })
+        xhr.send(JSON.stringify(body));
+        return p;
+      }
+      // Read input file
+      const readFile = (file) => {
+        let reader = new FileReader();
+        const p = new Promise((resolve, reject) => {
+          reader.onload = (ev) => {
+            document.querySelector('img').setAttribute('src', ev.target.result);
+            resolve(ev.target.result.replace(/^data:image\/(png|jpeg);base64,/, ''));
+          };
+        })
+        reader.readAsDataURL(file);
+        return p;
+      };
+      // Extract content from text
+      const extractContent = (text) => {
+        let result = [];
+        Object.keys(description).forEach(function (key) {
+          if (text.match(key)) {
+            result.push(description[key])
+          }
+        });
+        return result
+      };
+      const description = {
+        "デキストリン":"・デキストリンは、魔法の粉と言われています。",
+
+        "乳清たんぱく濃縮物":"・乳清たんぱく濃縮物は、乳製品に多く含まれています。",
+
+        "アスパルテーム":"・サッカリンとも。アスパルテームは、人工甘味料の一つです。",
+
+        "亜硝酸ナトリウム":"・亜硝酸ナトリウムには非常に強い毒性、急性症状として嘔吐やチアノーゼ、動悸、血圧降下などの症状がある。",
+
+        "亜硝酸塩":"・亜硝酸塩には発がん性や頭痛、めまいや記憶障害などがある。",
+
+        "アスセルファムK":"・アスセルファムKは脳腫瘍や発がん性の危険が高いとされ、海外では禁止されている国もある。",
+
+        "安息香酸":"・安息香酸Na、ソルビン酸とも。細菌やカビ、微生物の繁殖を抑える作用があり、食中毒を防ぐ効果がありますが、染色体や遺伝子を傷つけ、発がん性の危険性もある。",
+
+        "オルトフェニルフェノール":"・折るとフェニルフェノールは非常に毒性が強く、触れると皮膚や粘膜の腐食を起し、摂取すると肝臓障害、発がん性の危険も認められている。",
+
+        "マーガリン":"・マーガリン、ショートニングとも。発がん性や失明、視力低下、内臓異常やてんかん発作などが認められている。",
+
+        "イーストフード":"・イーストフードには吐き気や嘔吐、下痢や発がん性などがある。",
+
+        "リン酸塩":"・リン酸塩は骨密度の低下や治癒力と免疫力の低下、精神異常などがある。",
+
+        "アントシアニン":"・アントシアニンは、ブルーベリーなどにも含まれている色素です。",
+
+        "カロチノイド":"・カロチノイドは、野菜や藻類など天然に広く存在する黄色～赤色の色素です。",
+
+        "スクラロース":"・スクラロースは、人工甘味料の一つで、砂糖の約600倍もの甘さを持っている。",
+
+        "ソルビトール":"・ソルビトールは、自然界にも存在していると言われ、WHOでも危険性は極めて低いと言われている"
+
+      }
+      // Event handling
+      document.querySelector('input').addEventListener('change', ev => {
+        if (!ev.target.files || ev.target.files.length == 0) return;
+        Promise.resolve(ev.target.files[0])
+          .then(readFile)
+          .then(sendAPI)
+          .then(res => {
+            contents = extractContent(res.responses[0].fullTextAnnotation.text);
+            document.querySelector('pre').innerHTML = contents.join("\n");;
+          })
+          .catch(err => {
+            console.log('FAILED:(', err);
+            document.querySelector('pre').innerHTML = JSON.stringify(err, null, 2);
+          });
+      });
+    </script>
+  </body>
+</html>
