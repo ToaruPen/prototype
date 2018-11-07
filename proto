@@ -1,7 +1,40 @@
 <!DOCTYPE html>
 <html>
-  <head></head>
-  <body>
+  <head>
+     <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+  <meta http-equiv="Content-Security-Policy" content="default-src * data: gap: https://ssl.gstatic.com; style-src * 'unsafe-inline'; script-src * 'unsafe-inline' 'unsafe-eval'">
+  <script src="components/loader.js"></script>
+  <script src="lib/angular/angular.min.js"></script>
+  <script src="lib/onsenui/js/onsenui.min.js"></script>
+  <script src="lib/onsenui/js/angular-onsenui.min.js"></script>
+  <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script src="https://cdn.rawgit.com/naptha/tesseract.js/1.0.7/dist/tesseract.js"></script>
+
+  <link rel="stylesheet" href="components/loader.css">
+  <link rel="stylesheet" href="lib/onsenui/css/onsenui.css">
+  <link rel="stylesheet" href="lib/onsenui/css/onsen-css-components.css">
+  <link rel="stylesheet" href="css/style.css">
+
+  <script>
+    ons.bootstrap()
+      .controller('AppController', function($scope) {
+        this.load = function(page) {
+          $scope.splitter.content.load(page);
+          $scope.splitter.left.close();
+        };
+
+        this.toggle = function() {
+          $scope.splitter.left.toggle();
+        };
+      });
+
+    ons.ready(function() {
+        console.log("Onsen UI is ready!");
+    });
+  </script>
+  </head>
+
     <img style="max-width: 400px;"><input type="file" accept="image/*" />
     <pre></pre>
     <script type="text/javascript">
@@ -49,38 +82,68 @@
         });
         return result
       };
-      const description = {
+      const description = [{
         "デキストリン":"・デキストリンは、魔法の粉と言われています。",
+        grade:Good
+      },
+      {"乳清たんぱく濃縮物":"・乳清たんぱく濃縮物は、乳製品に多く含まれています。",
+        grade:Good
+      },
 
-        "乳清たんぱく濃縮物":"・乳清たんぱく濃縮物は、乳製品に多く含まれています。",
-
+      {
         "アスパルテーム":"・サッカリンとも。アスパルテームは、人工甘味料の一つです。",
+        grade:Bad
+      },
 
-        "亜硝酸ナトリウム":"・亜硝酸ナトリウムには非常に強い毒性、急性症状として嘔吐やチアノーゼ、動悸、血圧降下などの症状がある。",
-
+      {"亜硝酸ナトリウム":"・亜硝酸ナトリウムには非常に強い毒性、急性症状として嘔吐やチアノーゼ、動悸、血圧降下などの症状がある。",
+        grade:Bad
+      },
+      
+      {
         "亜硝酸塩":"・亜硝酸塩には発がん性や頭痛、めまいや記憶障害などがある。",
+        grade:Bad
+      },
 
-        "アスセルファムK":"・アスセルファムKは脳腫瘍や発がん性の危険が高いとされ、海外では禁止されている国もある。",
+      {"アスセルファムK":"・アスセルファムKは脳腫瘍や発がん性の危険が高いとされ、海外では禁止されている国もある。",
+        grade:Bad
+      },
 
-        "安息香酸":"・安息香酸Na、ソルビン酸とも。細菌やカビ、微生物の繁殖を抑える作用があり、食中毒を防ぐ効果がありますが、染色体や遺伝子を傷つけ、発がん性の危険性もある。",
+      {"安息香酸":"・安息香酸Na、ソルビン酸とも。細菌やカビ、微生物の繁殖を抑える作用があり、食中毒を防ぐ効果がありますが、染色体や遺伝子を傷つけ、発がん性の危険性もある。",
+        grade:Bad
+      },
 
-        "オルトフェニルフェノール":"・折るとフェニルフェノールは非常に毒性が強く、触れると皮膚や粘膜の腐食を起し、摂取すると肝臓障害、発がん性の危険も認められている。",
+      {"オルトフェニルフェノール":"・折るとフェニルフェノールは非常に毒性が強く、触れると皮膚や粘膜の腐食を起し、摂取すると肝臓障害、発がん性の危険も認められている。",
+        grade:Bad
+      },
 
-        "マーガリン":"・マーガリン、ショートニングとも。発がん性や失明、視力低下、内臓異常やてんかん発作などが認められている。",
+      {"マーガリン":"・マーガリン、ショートニングとも。発がん性や失明、視力低下、内臓異常やてんかん発作などが認められている。",
+        grade:Bad
+      },
 
-        "イーストフード":"・イーストフードには吐き気や嘔吐、下痢や発がん性などがある。",
+      {"イーストフード":"・イーストフードには吐き気や嘔吐、下痢や発がん性などがある。",
+        grade:Bad
+      },
 
-        "リン酸塩":"・リン酸塩は骨密度の低下や治癒力と免疫力の低下、精神異常などがある。",
+      { "リン酸塩":"・リン酸塩は骨密度の低下や治癒力と免疫力の低下、精神異常などがある。",
+        grade:Bad
+      },
 
-        "アントシアニン":"・アントシアニンは、ブルーベリーなどにも含まれている色素です。",
+      {"アントシアニン":"・アントシアニンは、ブルーベリーなどにも含まれている色素です。",
+        grade:Good
+      },
 
-        "カロチノイド":"・カロチノイドは、野菜や藻類など天然に広く存在する黄色～赤色の色素です。",
+      {"カロチノイド":"・カロチノイドは、野菜や藻類など天然に広く存在する黄色～赤色の色素です。",
+        grade:Good
+      },
 
-        "スクラロース":"・スクラロースは、人工甘味料の一つで、砂糖の約600倍もの甘さを持っている。",
+      {"スクラロース":"・スクラロースは、人工甘味料の一つで、砂糖の約600倍もの甘さを持っている。",
+        grade:Good
+      },
 
-        "ソルビトール":"・ソルビトールは、自然界にも存在していると言われ、WHOでも危険性は極めて低いと言われている"
-
+      {"ソルビトール":"・ソルビトールは、自然界にも存在していると言われ、WHOでも危険性は極めて低いと言われている"
+        grade:Good
       }
+      ];
       // Event handling
       document.querySelector('input').addEventListener('change', ev => {
         if (!ev.target.files || ev.target.files.length == 0) return;
