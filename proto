@@ -5,7 +5,7 @@
     <img style="max-width: 400px;"><input type="file" accept="image/*" />
     <pre></pre>
     <script type="text/javascript">
-      const api_key = `AIzaSyDP8DRHM9GWXn9MvFy4bGUzaVzFeBtiyUw`;
+      const api_key = `<%Your api keys%>`;
       const url = `https://vision.googleapis.com/v1/images:annotate`;
       // Send API Request to Cloud Vision API
       const sendAPI = (base64string) => {
