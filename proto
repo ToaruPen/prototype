@@ -67,6 +67,12 @@
         "grade":"Bad"
       }
       ]
+      var grade = {
+        "デキストリン" : "Good",
+        "乳清たんぱく濃縮物" : "Good",
+        "アスパルテーム" : "Bad",
+        "亜硝酸ナトリウム" : "Bad"
+      }
       // Event handling
       document.querySelector('input').addEventListener('change', ev => {
         if (!ev.target.files || ev.target.files.length == 0) return;
