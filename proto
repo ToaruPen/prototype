@@ -64,6 +64,20 @@
         "アスパルテーム" : "Bad",
         "亜硝酸ナトリウム" : "Bad"
       }
+      function gradeCount(data){
+        var good = 0;
+        var bad = 0;
+        for(var i = 0; i < data.length; i++ ){
+        if(data[i].grade == 'Good'){
+          good = good + 1;
+        }
+        else if(data[i].grade == 'Bad'){
+          bad = bad + 1;
+        }   
+      }
+        return { 'Good': good, 'Bad': bad };
+      }
+      }
       // Event handling
       document.querySelector('input').addEventListener('change', ev => {
         if (!ev.target.files || ev.target.files.length == 0) return;
