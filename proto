@@ -1,11 +1,47 @@
 <!DOCTYPE html>
 <html>
-  <head></head>
+  <head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+  <meta http-equiv="Content-Security-Policy" content="default-src * data: gap: https://ssl.gstatic.com; style-src * 'unsafe-inline'; script-src * 'unsafe-inline' 'unsafe-eval'">
+  <script src="components/loader.js"></script>
+  <script src="lib/angular/angular.min.js"></script>
+  <script src="lib/onsenui/js/onsenui.min.js"></script>
+  <script src="lib/onsenui/js/angular-onsenui.min.js"></script>
+  <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script src="https://cdn.rawgit.com/naptha/tesseract.js/1.0.7/dist/tesseract.js"></script>
+
+  <link rel="stylesheet" href="components/loader.css">
+  <link rel="stylesheet" href="lib/onsenui/css/onsenui.css">
+  <link rel="stylesheet" href="lib/onsenui/css/onsen-css-components.css">
+  <link rel="stylesheet" href="css/style.css">
+  </head>
   <body>
-    <img style="max-width: 400px;"><input type="file" accept="image/*" />
-    <pre></pre>
-    <script type="text/javascript">
-      const api_key = `<%Your api keys%>`;
+    <script>
+  ons.bootstrap();
+  document.addEventListener('init', function(event) {
+  var page = event.target;
+
+  if (page.id === 'page1') {
+    page.querySelector('#push-button1').onclick = function() {
+      document.querySelector('#navigator').pushPage('page2.html', {data: {title: 'Page 2'}});
+    };
+  } else if (page.id === 'page2') {
+      document.querySelector('input').addEventListener('change', ev => {
+        if (!ev.target.files || ev.target.files.length == 0) return;
+        Promise.resolve(ev.target.files[0])
+          .then(readFile)
+          .then(sendAPI)
+          .then(res => {
+            contents = extractContent(res.responses[0].fullTextAnnotation.text);
+            document.querySelector('#contents').innerHTML = contents.join("\n");
+          })
+          .catch(err => {
+            console.log('FAILED:(', err);
+            document.querySelector('#contents').innerHTML = JSON.stringify(err, null, 2);
+          });
+      });
+      const api_key = `AIzaSyDP8DRHM9GWXn9MvFy4bGUzaVzFeBtiyUw`;
       const url = `https://vision.googleapis.com/v1/images:annotate`;
       // Send API Request to Cloud Vision API
       const sendAPI = (base64string) => {
@@ -58,41 +94,31 @@
 
         "亜硝酸ナトリウム" : "・亜硝酸ナトリウムには非常に強い毒性、急性症状として嘔吐やチアノーゼ、動悸、血圧降下などの症状がある。",
       }
-      var grade = {
-        "デキストリン" : "Good",
-        "乳清たんぱく濃縮物" : "Good",
-        "アスパルテーム" : "Bad",
-        "亜硝酸ナトリウム" : "Bad"
-      }
-      function gradeCount(data){
-        var good = 0;
-        var bad = 0;
-        for(var i = 0; i < data.length; i++ ){
-        if(data[i].grade == 'Good'){
-          good = good + 1;
-        }
-        else if(data[i].grade == 'Bad'){
-          bad = bad + 1;
-        }   
-      }
-        return { 'Good': good, 'Bad': bad };
-      }
-      }
-      // Event handling
-      document.querySelector('input').addEventListener('change', ev => {
-        if (!ev.target.files || ev.target.files.length == 0) return;
-        Promise.resolve(ev.target.files[0])
-          .then(readFile)
-          .then(sendAPI)
-          .then(res => {
-            contents = extractContent(res.responses[0].fullTextAnnotation.text);
-            document.querySelector('pre').innerHTML = contents.join("\n");;
-          })
-          .catch(err => {
-            console.log('FAILED:(', err);
-            document.querySelector('pre').innerHTML = JSON.stringify(err, null, 2);
-          });
-      });
+      }});
     </script>
+  <ons-navigator swipeable id="navigator" page="page1.html"></ons-navigator>
+  <template id="page1.html">
+  <ons-page id="page1">
+    <ons-toolbar>
+    <div class="center">MVP</div>
+    </ons-toolbar>
+
+    <p>これはMVPです。</p>
+
+    <ons-button id="push-button1">OCRを使う</ons-button>
+  </ons-page>
+  </template>
+
+  <template id="page2.html">
+  <ons-page id="page2">
+    <ons-toolbar>
+      <div class="left"><ons-back-button>戻る</ons-back-button></div>
+      <div class="center">OCR</div>
+    </ons-toolbar>
+    <img style="max-width: 400px;"><input type="file" accept="image/*" />
+      <pre id="contents"></pre>
+      
+    </ons-page>
+  </template>
   </body>
 </html>
